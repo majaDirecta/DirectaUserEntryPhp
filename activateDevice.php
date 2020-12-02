@@ -4,33 +4,18 @@
 	$post = file_get_contents('php://input');
     $json = json_decode($post, true);
 	
-	echo json_encode(activateDevice($conn,$json));
+	$sql = "SELECT count(*) AS `total` FROM licences WHERE rb = ".$json["rb"]." AND companyId = ".$json["companyId"]." AND activated = 1";
+	$result = $conn->query($sql)->fetch_array();
+	if( $result['total'] > 0) { exit('{"status": 290, "result":"Already activated!"}'); }
 	
-	function activateDevice($conn,$data){
-		$sql = "SELECT * FROM licences where rb = ".$data["rb"]."";
-		$result = $conn->query($sql);
-		$LicenceList = array();
-		if ($result->num_rows > 0) {
-			// output data of each row
-			while($row = $result->fetch_assoc()) {
-				if($row["activated"] == 0) {
-					$sqlUpdate = "UPDATE licences SET mobileUID='".$data["mobileUID"]."', activated =".true.", activation_time = ".round(microtime(true) * 1000)." WHERE rb=".$data["rb"]."";
-					if ($conn->query($sqlUpdate ) === TRUE) {
-						$licence  = array();
-						$licence['rb'] = $row["rb"]; 
-						$licence['companyId'] = $row["companyId"]; 
-						array_push($LicenceList,$licence);
-						return $LicenceList;
-					} else {
-						echo "Update problem";
-					}
-				}else{
-					echo null;
-				}
-			}
-		} else {
-			// echo $data["rb"];
-		} 
+	$sql = "SELECT count(*) AS `total` FROM licences WHERE rb = ".$json["rb"]." AND companyId = ".$json["companyId"]."";
+	$result = $conn->query($sql)->fetch_array();
+	if( $result['total'] == 0) { exit('{"status": 291, "result":"Do not exist!"}'); }
+	
+	$sql = "UPDATE licences SET mobileUID='".$json["mobileUID"]."', activated =true, activation_time = ".round(microtime(true) * 1000)." WHERE rb=".$json["rb"]." AND companyId = ".$json["companyId"]."";
+	if ($conn->query($sql) === false) {
+		exit('{"status": 292, "result":"Error on update!"}');
 	}
 	$conn->close();
+	echo '{"status": 200, "result":'.json_encode($json).'}';	
 ?> 

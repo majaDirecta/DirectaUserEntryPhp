@@ -3,27 +3,12 @@
 	
 	$post = file_get_contents('php://input');
     $json = json_decode($post, true);
-
-	echo json_encode(getCommands($conn,$json));
-
-	function getCommands($conn,$record){
-		$sql = "SELECT * FROM commands where createTime > ".$record['lastUpdate']." AND createTime < ".$record['currentTime']."";
-		$result = $conn->query($sql);
-		$commandList = array();
-		if ($result->num_rows > 0) {
-			// output data of each row
-			while($row = $result->fetch_assoc()) {
-				$command  = array();
-				$command['rb'] = $row["rb"]; 
-				$command['command'] = $row["command"]; 
-				$command['createTime'] = $row["createTime"]; 
-		   
-				array_push($commandList,$command);
-			}
-		} else {
-			echo null;
-		}
-		return $commandList;
-	}
-	$conn->close();
+	
+	$sql = "SELECT `rb`, `command`, `createTime` FROM commands where createTime > ".$json['lastUpdate']." AND createTime < ".$json['currentTime']."";
+	$result = $conn->query($sql);
+	if (!$result) { die("Query Failed."); }	
+	$array = mysqli_fetch_all($result,MYSQLI_ASSOC);	
+	$result->free();
+	$conn->close();	
+	echo json_encode($array);
 ?> 

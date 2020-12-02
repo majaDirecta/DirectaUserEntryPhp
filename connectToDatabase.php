@@ -11,6 +11,6 @@
 
 	// Check connection
 	if ($conn->connect_error) {
-		die("Connection failed: " . $conn->connect_error);
+		exit('{"status": 590, "result":"SQL connection failed!"}');
 	}
 ?> 

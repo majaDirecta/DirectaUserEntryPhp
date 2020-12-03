@@ -3,17 +3,14 @@
 	
 	$post = file_get_contents('php://input');
     $json = json_decode($post, true);
-
-	saveImage($conn,$json);
-	//echo json_encode();
-	function saveImage($conn,$data){
-        $imgData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $data['data']));
-        file_put_contents('images/'.$data['snapshotName'].'.png', $imgData);
-        $sql = "INSERT INTO snapshot_records (fileName,uploadTime)
-        VALUES ('".$data['snapshotName']."', '".$data['uploadTime']."')";
-        if (!$conn->query($sql) === TRUE) {
-             echo "Error updating record: " . $conn->error;
-        } 
+	
+	$imgData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $json['data']));
+	file_put_contents('images/'.$json['snapshotName'].'.png', $imgData);
+	$sql = "INSERT INTO snapshot_records (fileName,uploadTime)
+	VALUES ('".$json['snapshotName']."', '".$json['uploadTime']."')";
+	if ($conn->query($sql) === false) {
+		exit('{"status":500, "result":"Error: ' . $sql . '<br>' . $conn->error . '"');
 	}
 	$conn->close();
+	echo '{"status":200, "result":"Saved successfully!", "id": '.$json['id'].'}';	
 ?> 

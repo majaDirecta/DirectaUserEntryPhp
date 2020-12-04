@@ -7,7 +7,7 @@
 	$sql = "SELECT `rb`, `command`, `createTime` FROM commands where createTime > ".$json['lastUpdate']." AND createTime < ".$json['currentTime']."";
 	$result = $conn->query($sql);
 	if (!$result) { die("Query Failed."); }	
-	$array = mysqli_fetch_all($result,MYSQLI_ASSOC);	
+	$array = $result->fetch_all(MYSQLI_ASSOC);
 	$result->free();
 	$conn->close();	
 	echo json_encode($array);

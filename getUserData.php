@@ -7,7 +7,8 @@
 	$sql = "SELECT `Userid`, `Name`, `companyId`, `CardnumMobile` AS `Cardnum`,`active`,`updateTime` FROM userinfo where companyId = ".$json["companyId"]." AND updateTime >= ".$json["lastUpdateTime"]." AND updateTime < ".$json["currentTime"]." ";
 	$result = $conn->query($sql);
 	if (!$result) {exit('{"status": 591, "result":"Query Failed!"}');}	
-	$array = mysqli_fetch_all($result,MYSQLI_ASSOC);	
+	//$array = mysqli_fetch_all($result,MYSQLI_ASSOC);
+	$array = $result->fetch_all(MYSQLI_ASSOC);
 	$result->free();
 	$conn->close();	
 	if(count($array)==0){exit('{"status": 204, "result":"No content!"}');}

@@ -4,7 +4,7 @@
 	$post = file_get_contents('php://input');
     $json = json_decode($post, true);
 	
-	$sql = "SELECT `Userid`, `Name`, `companyId`, `CardnumMobile` AS `Cardnum`,`active`,`updateTime` FROM userinfo WHERE companyId = ".$json['companyId'];
+	$sql = "SELECT `Userid`, `companyId`, `CardnumMobile` AS `Cardnum`,`active`,`updateTime` FROM userinfo WHERE companyId = ".$json['companyId'];
 	
 	$result = $conn->query($sql);
 	if (!$result) {exit('{"status": 591, "result":"Query Failed!"}');}	
